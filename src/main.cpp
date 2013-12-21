@@ -12,11 +12,18 @@ int main()
 {
   test_func tes = {0};
   tes.f_func = atest;
-  
+
   Cut c0("c0", tes);
-  
+
+  std::cout << "RUNNING\n";
+  c0.AddCut(new Cut(tes))(new Cut(tes))(new Cut(tes));
+  std::cout << c0.Size() << std::endl;
+
+  c0.AddCut(new Cut(tes))(new Cut(tes));
+  std::cout << c0.Size() << std::endl;
+
   std::cout << c0.Run(1.0f) << ' ' << c0.Run(9.0f) << std::endl;
-  
+
   std::cout << "It works!" << std::endl;
   return 0;
 }

@@ -3,7 +3,7 @@
 #
 
 CXX = g++
-
+CXX_FLAGS = -Wall -g -std=c++11 
 
 all: build test
 

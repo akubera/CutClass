@@ -1,7 +1,7 @@
 /*
  * src/CutList.hpp
  *
- *
+ * Definition of a list of cuts to be applied to some data
  */
 
 

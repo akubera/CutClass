@@ -1,3 +1,8 @@
+/*
+ * src/Cut.hpp
+ *
+ *
+ */
 
 #pragma once
 
@@ -20,6 +25,9 @@ public:
   // Cut(const std::string& name, test_int_func);
   Cut(const std::string& name, test_func);
   Cut(test_func);
+  Cut(const std::string& name);
+
+  std::string Name() {return _name;};
 
   bool Run(float f) {
     return _test.f_func(f);

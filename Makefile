@@ -11,7 +11,7 @@ all: build test
 test: build/main.o build/Cut.o
 	${CXX} ${CXX_FLAGS} $^ -o $@
 
-build/%.o: src/%.cpp src/%.hpp
+build/%.o: src/%.cpp src/%.hpp build
 	${CXX} ${CXX_FLAGS} -c $< -o $@
 
 build:

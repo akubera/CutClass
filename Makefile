@@ -12,7 +12,7 @@ all: build test
 test: build/main.o build/Cut.o build/CutList.o
 	${CXX} ${CXX_FLAGS} ${CXX_LIBS} $^ -o $@
 
-build/%.o: src/%.cpp src/%.hpp build
+build/%.o: src/%.cpp src/%.hpp
 	${CXX} ${CXX_FLAGS} -c $< -o $@
 
 build:

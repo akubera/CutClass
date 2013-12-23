@@ -3,6 +3,7 @@
 
 #include "main.hpp"
 #include "Cut.hpp"
+#include "CutList.hpp"
 
 gsl_rng *gRandomGenerator;
 
@@ -26,11 +27,18 @@ int main()
   c0.AddCut(new eta_greator(2.0))(new eta_greator(5.0))(new eta_greator(8.0));
   std::cout << "c0.Size : " << c0.Size() << std::endl;
 
-  // Cut pt_cut("pt", new pt_greator(3.0));
+  Cut pt_cut("pt", new pt_greator(3.0));
 
-  // pt_cut.AddCut(new pt_greator(6.0));
-  // std::cout << c0.Size() << std::endl;
+  pt_cut.AddCut(new pt_greator(6.0));
+  std::cout << "pt_cut.Size : " << pt_cut.Size() << std::endl;
 
+
+  CutList cuts;
+  cuts.AddCut(c0);
+  cuts.AddCut(pt_cut);
+  Track track = Generate();
+  track.print();
+  std::cout << "Testing Random : " << cuts.Run(track) << std::endl;
   // std::cout << c0.Run(1.0f) << ' ' << c0.Run(9.0f) << std::endl;
 
   std::cout << "It works!" << std::endl;
@@ -40,9 +48,9 @@ int main()
 Track Generate() {
   Track res;
 
-  res.px = gsl_ran_gaussian(gRandomGenerator, 25*25);
-  res.py = gsl_ran_gaussian(gRandomGenerator, 25*25);
-  res.pz = gsl_ran_gaussian(gRandomGenerator, 25*25);
+  res.px = gsl_ran_gaussian(gRandomGenerator, 25*15);
+  res.py = gsl_ran_gaussian(gRandomGenerator, 25*15);
+  res.pz = gsl_ran_gaussian(gRandomGenerator, 25*15);
   double x = gsl_ran_flat(gRandomGenerator, 0.0, 1.0);
   // Boltzmann
   res.m =  T*(1+log(1/(1-x)));

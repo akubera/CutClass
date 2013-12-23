@@ -30,9 +30,19 @@ Cut::~Cut() {
   }
 }
 
+
+// Function used to accumulate the counts of all the cuts
+static size_t _cut_count(size_t s, Cut *c) {
+  return s + c->Size();
+}
+
 size_t
 Cut::Size() {
-    return std::accumulate(_subcuts.begin(), _subcuts.end(), 1, [](size_t s,Cut* c){return s + c->Size();});
+  // accumulate, beginning with 1
+  return std::accumulate(_subcuts.begin(), _subcuts.end(), 1, _cut_count);
+
+  // Do not use lambda functions if we are not using c++11, instead use the external _cut_count function
+//    return std::accumulate(_subcuts.begin(), _subcuts.end(), 1, [](size_t s,Cut* c){return s + c->Size();});
 }
 
 Cut::CutInserter

@@ -23,6 +23,9 @@ struct track {
   float eta() const {
     return 1.0/2.0 * log((E+pz)/(E-pz));
   };
+  void print() const {
+    printf("px %f py %f pz %f m %f E %f\n",px,py,pz,m,E);
+  }
 };
 
 typedef bool (*pt_test)(Track);

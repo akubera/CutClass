@@ -18,10 +18,12 @@ public:
   CutList();
   ~CutList();
   
-  void AddCut(const std::string& name, Cut);
-  void AddCut(Cut);
+  void AddCut(const std::string& name, Cut&);
+  void AddCut(Cut&);
   
   int Run(const Track& x);
+
+  size_t Size();
 
 protected:
   std::vector<Cut*> _cuts;

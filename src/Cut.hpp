@@ -13,8 +13,9 @@
 #include <iostream>
 #include <cstdlib>
 
-typedef bool (*test_int_func)(int);
-typedef bool (*test_float_func)(float);
+#include "main.hpp"
+
+// typedef bool (*test_func)(Track);
 
 typedef struct {
   int id;
@@ -23,6 +24,7 @@ typedef struct {
     test_float_func f_func;
   };
 } test_func;
+
 
 /**
  * Cut
@@ -36,6 +38,8 @@ public:
   Cut(const std::string& name, test_func);
   Cut(test_func);
   Cut(const std::string& name);
+
+  virtual ~Cut();
 
   std::string Name() {return _name;};
 

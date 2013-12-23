@@ -24,6 +24,12 @@ Cut::Cut(const std::string& name) :
   
 }
 
+Cut::~Cut() {
+  for (size_t i = 0; i < _subcuts.size(); i++) {
+    delete _subcuts[i];
+  }
+}
+
 size_t
 Cut::Size()  {
     return std::accumulate(_subcuts.begin(), _subcuts.end(), 1, [](size_t s,Cut* c){return s + c->Size();});

@@ -13,6 +13,11 @@ CutList::CutList() {
   
 }
 
+CutList::~CutList() {
+  for (size_t i = 0; i < _cuts.size(); i++) {
+    delete _cuts[i];
+  }
+}
 
 void 
 CutList::AddCut(const std::string& name, Cut c) {

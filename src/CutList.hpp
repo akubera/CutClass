@@ -16,6 +16,7 @@
 class CutList {
 public:
   CutList();
+  ~CutList();
   
   void AddCut(const std::string& name, Cut);
   void AddCut(Cut);
@@ -26,3 +27,4 @@ protected:
   std::vector<Cut*> _cuts;
 
 };
+

@@ -34,7 +34,7 @@ CutList::AddCut(Cut c) {
 }
   
 int
-CutList::Run(float x) {
+CutList::Run(const Track& x) {
   int res = 0;
   for (unsigned int i = 0; i <  _cuts.size(); i++) {
     res |= (_cuts[i]->Run(x) << i);

@@ -21,7 +21,7 @@ public:
   void AddCut(const std::string& name, Cut);
   void AddCut(Cut);
   
-  int Run(float);
+  int Run(const Track& x);
 
 protected:
   std::vector<Cut*> _cuts;

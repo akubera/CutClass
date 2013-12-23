@@ -6,13 +6,13 @@
 
 #include "Cut.hpp"
 
-Cut::Cut(const std::string& name, test_func function) :
+Cut::Cut(const std::string& name, test_func* function) :
   _index(0), _name(name), _test(function)
 {
   
 }
 
-Cut::Cut(test_func function) :
+Cut::Cut(test_func* function) :
   _index(0), _name(""), _test(function)
 {
   
@@ -31,7 +31,7 @@ Cut::~Cut() {
 }
 
 size_t
-Cut::Size()  {
+Cut::Size() {
     return std::accumulate(_subcuts.begin(), _subcuts.end(), 1, [](size_t s,Cut* c){return s + c->Size();});
 }
 
@@ -41,9 +41,8 @@ Cut::AddCut(Cut *c) {
   return Cut::CutInserter(this);
 }
 
-
 Cut::CutInserter& 
-Cut::CutInserter::operator()(Cut *c) {
+Cut::CutInserter::operator() (Cut *c) {
   _parent->AddCutVoid(c);
   return *this;
 }
@@ -62,3 +61,7 @@ Cut::AddCutVoid(Cut *c) {
   _subcuts.push_back(c);  
 }
 
+bool
+Cut::Run(const Track& t) {
+  return (*_test)(t);
+}

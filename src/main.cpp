@@ -22,8 +22,9 @@ int main()
   Cut c0("eta", new eta_greator(1.0));
 
   std::cout << "RUNNING\n";
-  c0.AddCut(new Cut(new eta_greator(2.0)));// (new eta_greator(5.0)) ;//(new eta_greator(8.0));
-  std::cout << c0.Size() << std::endl;
+
+  c0.AddCut(new eta_greator(2.0))(new eta_greator(5.0))(new eta_greator(8.0));
+  std::cout << "c0.Size : " << c0.Size() << std::endl;
 
   // Cut pt_cut("pt", new pt_greator(3.0));
 
@@ -42,8 +43,10 @@ Track Generate() {
   res.px = gsl_ran_gaussian(gRandomGenerator, 25*25);
   res.py = gsl_ran_gaussian(gRandomGenerator, 25*25);
   res.pz = gsl_ran_gaussian(gRandomGenerator, 25*25);
-  res.m =  T*(1+log(1/(1-gsl_ran_flat(gRandomGenerator, 0.0, 1.0))));
-  res.E = abs(gsl_ran_gaussian(gRandomGenerator, 25*25));
+  double x = gsl_ran_flat(gRandomGenerator, 0.0, 1.0);
+  // Boltzmann
+  res.m =  T*(1+log(1/(1-x)));
+  res.E = sqrt(res.m * res.m + res.px * res.px +res.py*res.py + res.pz*res.pz);
   res.id = 0;
   return res;
 }

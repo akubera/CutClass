@@ -33,14 +33,6 @@ public:
   virtual ~Cut();
 
   std::string Name() {return _name;};
-
-  // bool Run(float f) {
-  //   return _test.f_func(f);
-  // }
-  // 
-  // bool Run(int i) {
-  //   return _test.i_func(i);
-  // }
   
   bool Run(const Track&);
 
@@ -50,9 +42,10 @@ public:
   public:
     CutInserter(Cut *c) : _parent(c) {};
     CutInserter(test_func *t_func) : _parent(new Cut(t_func)) {};
-    ~CutInserter() { std::cout << "~CutInserter\n"; };
+    virtual ~CutInserter() { std::cout << "~CutInserter\n"; };
 
     CutInserter& operator() (Cut *c);
+    CutInserter& operator() (test_func *test);
 
   protected:
     Cut* _parent;

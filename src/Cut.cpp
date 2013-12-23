@@ -47,9 +47,15 @@ Cut::CutInserter::operator() (Cut *c) {
   return *this;
 }
 
+Cut::CutInserter& 
+Cut::CutInserter::operator() (test_func *test) {
+  return (*this)(new Cut(test));
+}
+
+
 void
 Cut::AddCutVoid(Cut *c) {
-  std::cout << "Stuff : " << (void*)c << std::endl;
+  // std::cout << "Adding Cut with _bound : " << c->_test->_bound << std::endl;
   if (this == c) {
     std::cerr << "Attempting to add a cut to itself - not a good idea. Aborting." << std::endl;
     exit(EXIT_FAILURE);

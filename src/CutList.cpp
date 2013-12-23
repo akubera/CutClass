@@ -36,7 +36,7 @@ CutList::Run(const Track& x) {
   int res = 0;
   std::cout << "\n[CutList::Run] ("<<_cuts.size()<<")\n";
   for (unsigned int i = 0; i <  _cuts.size(); i++) {
-    std::cout << "\t" << _cuts[i]->Run(x) << "\n";
+    std::cout << "\t" << _cuts[i]->Run(x) << " " << _cuts[i]->Size() << "\n";
     res |= (_cuts[i]->Run(x) << i);
   }
   return res;
@@ -51,4 +51,9 @@ size_t
 CutList::Size() {
   return std::accumulate(_cuts.begin(), _cuts.end(), 0, _cut_count);
   // return std::accumulate(_cuts.begin(), _cuts.end(), 0, [](size_t s, Cut* c){return s + c->Size();});
+}
+
+void 
+CutList::AddAction(const std::string& logic_stmt, void (*action)(const Track&)) {
+  _action_map[0].push_back(action);
 }

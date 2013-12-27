@@ -38,7 +38,6 @@ typedef bool (*pt_test)(Track);
 template <int N, int D>
 bool pt_greater(Track t) {
   // float pt = sqrt(t.px*t.px+t.py*t.py);
-  std::cout << t.pt() << " : " << 1.0f * N / D << std::endl;
   return (1.0f * N / D < t.pt());
 };
 
@@ -56,7 +55,6 @@ class pt_greator : public test_func {
 public:
   pt_greator(float f) : test_func(f) {};
   bool operator() (const Track& t) {
-    std::cout << "PT : " << t.pt() << " : " << _bound << std::endl;
     return (_bound < sqrt(t.px*t.px+t.py*t.py));
   };
 };
@@ -66,7 +64,6 @@ class eta_greator : public test_func {
 public:
   eta_greator(float f) : test_func(f) {};
   bool operator() (const Track& t) {
-    std::cout << "ETA : " << t.eta() << " : " << _bound << std::endl;
     return (_bound < t.eta());
   };
 };

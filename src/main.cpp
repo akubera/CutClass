@@ -9,7 +9,7 @@
 gsl_rng *gRandomGenerator;
 
 // a "temperature" value for the Boltzmann mass distribution
-static float T = 220.0;
+static float T = 250;
 
 
 int
@@ -24,7 +24,7 @@ main()
   Cut c0("eta", new eta_greator(0.1));
 
   // add some other cuts acting on different ranges
-  c0.AddCut(new eta_greator(2.0))(new eta_greator(5.0))(new eta_greator(8.0));
+  c0.AddCut("zab", new eta_greator(2.0))(new eta_greator(5.0))(new eta_greator(8.0));
   
   
   // Create a pt cut
@@ -40,7 +40,7 @@ main()
 
   
   cuts.AddAction("eta", add_to_histogram_eta_1);
-  cuts.AddAction("pt.0 eta.0", add_to_histogram_1);
+  cuts.AddAction("pt zab", add_to_histogram_1);
 
   cuts.Print();
 
@@ -48,20 +48,27 @@ main()
   Track track = Generate();
   track.print();
   std::cout << "Testing Random : " << cuts.Run(track) << std::endl;
+  for (int i = 0; i < 50; i++) {
+    Track t = Generate();
+    std::cout << "Mass : " << t.m << std::endl;
+    cuts.Run(t);
+  }
   // std::cout << c0.Run(1.0f) << ' ' << c0.Run(9.0f) << std::endl;
 
   std::cout << "It works!" << std::endl;
   return 0;
 }
 
+
+// Function to generate some particles (use Gaussian distributions)
 Track Generate() {
   Track res;
 
-  res.px = gsl_ran_gaussian(gRandomGenerator, 25*5);
-  res.py = gsl_ran_gaussian(gRandomGenerator, 25*5);
-  res.pz = gsl_ran_gaussian(gRandomGenerator, 1500);
+  res.px = gsl_ran_gaussian(gRandomGenerator, 20);
+  res.py = gsl_ran_gaussian(gRandomGenerator, 20);
+  res.pz = gsl_ran_gaussian(gRandomGenerator, 4);
   double x = gsl_ran_flat(gRandomGenerator, 0.0, 1.0);
-  // Boltzmann
+  // Boltzmann?
   res.m =  T*(1+log(1/(1-x)));
   res.E = sqrt(res.m * res.m + res.px * res.px +res.py*res.py + res.pz*res.pz);
   res.id = 0;

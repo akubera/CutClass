@@ -58,6 +58,9 @@ public:
   CutInserter AddCut(test_func *t_func) {
     return AddCut(new Cut(t_func));
   };
+  CutInserter AddCut(const std::string& str, test_func *t_func) {
+    return AddCut(new Cut(str, t_func));
+  };
 
 protected:
   size_t _index;

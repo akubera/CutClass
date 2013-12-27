@@ -57,7 +57,7 @@ CutList::AddCut(Cut& c) {
       std::stringstream ss;
       ss << c.Name() << '.' << i;
       _name_map[ss.str()] = cptr;
-      std::cout << "Adding : " << &c << " " << ss.str() << " -> " << cptr << std::endl;
+      // std::cout << "Adding : " << &c << " " << ss.str() << " -> " << cptr << std::endl;
     } else {
       _name_map[cptr->_name] = cptr;
     }
@@ -72,11 +72,9 @@ CutList::Run(const Track& x) {
   for (unsigned int i = 0; i <  _cuts.size(); i++) {
     bool yes = _cuts[i]->Run(x);
     res |= (yes << i);
-    std::cout << "Running " << i << " :: " << yes << " -> " <<  res << std::endl;
   }
   // res is now a bitcode representing the positions of the _cuts list which the track passed
 
-  std::cout << "Looping through actions\n";
   // Loop through actions and run all which match the resulting pattern
   for ( std::map<uint32_t, std::vector<void (*)(const Track&)> >::iterator it = _action_map.begin();
         it != _action_map.end();
@@ -122,24 +120,13 @@ CutList::AddAction(const std::string& logic_stmt, void (*action)(const Track&)) 
     ss >> it;
     
     // find the position in the _cuts vector
-    // std::vector<Cut*>::iterator found = std::find(_cuts.begin(), _cuts.end(), _name_map[it]);
-    // if (found == _cuts.end()) {
-    //   std::cerr << "ERROR : Cut identified by '" << it << "' was not found." << std::endl; 
-    //   throw std::exception();
-    // }
-    // get the position of the vector
-    // size_t position = found - _cuts.begin();
-
-    size_t position = 0;
-    for (; position < _cuts.size(); position++) {
-      if (_cuts[position] == _name_map[it]) {
-        std::cout << "Found " << it << " at position " << position << std::endl;
-        break;
-      } else {
-        std::cout << "Not at position " << position << " ("<< _cuts[position] << " != "<< _name_map[it] <<")\n";
-      }
+    std::vector<Cut*>::iterator found = std::find(_cuts.begin(), _cuts.end(), _name_map[it]);
+    if (found == _cuts.end()) {
+      std::cerr << "ERROR : Cut identified by '" << it << "' was not found." << std::endl; 
+      throw std::exception();
     }
-
+    // get the position of the vector
+    size_t position = found - _cuts.begin();
     
     // bitwise OR to flip the bit at that position
     action_mask |= (0x01 << position);

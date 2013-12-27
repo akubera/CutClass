@@ -37,8 +37,9 @@ typedef bool (*pt_test)(Track);
 
 template <int N, int D>
 bool pt_greater(Track t) {
-  float pt = sqrt(t.px*t.px+t.py*t.py);
-  return (1.0f * N / D < pt);
+  // float pt = sqrt(t.px*t.px+t.py*t.py);
+  std::cout << t.pt() << " : " << 1.0f * N / D << std::endl;
+  return (1.0f * N / D < t.pt());
 };
 
 // typedef class test_func TestFunc;
@@ -55,6 +56,7 @@ class pt_greator : public test_func {
 public:
   pt_greator(float f) : test_func(f) {};
   bool operator() (const Track& t) {
+    std::cout << "PT : " << t.pt() << " : " << _bound << std::endl;
     return (_bound < sqrt(t.px*t.px+t.py*t.py));
   };
 };
@@ -64,6 +66,7 @@ class eta_greator : public test_func {
 public:
   eta_greator(float f) : test_func(f) {};
   bool operator() (const Track& t) {
+    std::cout << "ETA : " << t.eta() << " : " << _bound << std::endl;
     return (_bound < t.eta());
   };
 };
@@ -82,7 +85,7 @@ Track Generate();
 
 
 void add_to_histogram_1(const Track& );
-
+void add_to_histogram_eta_1(const Track& );
 
 extern gsl_rng *gRandomGenerator;
 

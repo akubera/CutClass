@@ -20,8 +20,8 @@ main()
   gsl_rng_set (gRandomGenerator, 0.0);
 
   // created a rapidity cut named "eta", which returns true if the passed track has a
-  //  pseudo-rapidity greater than 1.0
-  Cut c0("eta", new eta_greator(1.0));
+  //  pseudo-rapidity greater than 0.1
+  Cut c0("eta", new eta_greator(0.1));
 
   // add some other cuts acting on different ranges
   c0.AddCut(new eta_greator(2.0))(new eta_greator(5.0))(new eta_greator(8.0));
@@ -39,6 +39,7 @@ main()
   cuts.AddCut(pt_cut);
 
   
+  cuts.AddAction("eta", add_to_histogram_eta_1);
   cuts.AddAction("pt.0 eta.0", add_to_histogram_1);
 
   cuts.Print();
@@ -56,9 +57,9 @@ main()
 Track Generate() {
   Track res;
 
-  res.px = gsl_ran_gaussian(gRandomGenerator, 25*15);
-  res.py = gsl_ran_gaussian(gRandomGenerator, 25*15);
-  res.pz = gsl_ran_gaussian(gRandomGenerator, 25*15);
+  res.px = gsl_ran_gaussian(gRandomGenerator, 25*5);
+  res.py = gsl_ran_gaussian(gRandomGenerator, 25*5);
+  res.pz = gsl_ran_gaussian(gRandomGenerator, 1500);
   double x = gsl_ran_flat(gRandomGenerator, 0.0, 1.0);
   // Boltzmann
   res.m =  T*(1+log(1/(1-x)));
@@ -70,4 +71,9 @@ Track Generate() {
 void
 add_to_histogram_1(const Track& track) {
   std::cout << "Adding track with pt : " << track.pt() << std::endl;
+}
+
+void
+add_to_histogram_eta_1(const Track& track) {
+  std::cout << "Track has eta > 0.1 : " << track.eta() << std::endl;
 }

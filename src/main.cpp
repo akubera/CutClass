@@ -5,37 +5,45 @@
 #include "Cut.hpp"
 #include "CutList.hpp"
 
+// the GNU Scientific Library random number generator (global variable)
 gsl_rng *gRandomGenerator;
 
-// bool atest(float x) {
-//   return x < 2.0;
-// }
+// a "temperature" value for the Boltzmann mass distribution
 static float T = 220.0;
 
-int main()
+
+int
+main()
 {
   // setup random number generator
   gRandomGenerator = gsl_rng_alloc(gsl_rng_taus);
   gsl_rng_set (gRandomGenerator, 0.0);
-  // test_func tes = {0};
-  // tes.f_func = atest;
 
+  // created a rapidity cut named "eta", which returns true if the passed track has a
+  //  pseudo-rapidity greater than 1.0
   Cut c0("eta", new eta_greator(1.0));
 
-  std::cout << "RUNNING\n";
-
+  // add some other cuts acting on different ranges
   c0.AddCut(new eta_greator(2.0))(new eta_greator(5.0))(new eta_greator(8.0));
-  std::cout << "c0.Size : " << c0.Size() << std::endl;
-
+  
+  
+  // Create a pt cut
   Cut pt_cut("pt", new pt_greator(3.0));
 
+  // add another cut to the pt-cut group
   pt_cut.AddCut(new pt_greator(6.0));
-  std::cout << "pt_cut.Size : " << pt_cut.Size() << std::endl;
 
-
+  // add cuts to a cutlist
   CutList cuts;
   cuts.AddCut(c0);
   cuts.AddCut(pt_cut);
+
+  
+  cuts.AddAction("pt.0 eta.0", add_to_histogram_1);
+
+  cuts.Print();
+
+  // generate a random cut
   Track track = Generate();
   track.print();
   std::cout << "Testing Random : " << cuts.Run(track) << std::endl;
@@ -57,4 +65,9 @@ Track Generate() {
   res.E = sqrt(res.m * res.m + res.px * res.px +res.py*res.py + res.pz*res.pz);
   res.id = 0;
   return res;
+}
+
+void
+add_to_histogram_1(const Track& track) {
+  std::cout << "Adding track with pt : " << track.pt() << std::endl;
 }

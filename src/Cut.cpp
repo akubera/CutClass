@@ -74,10 +74,11 @@ Cut::AddCutVoid(Cut *c) {
     std::cerr << "Attempting to add a null pointer to a cut. Aborting." << std::endl;
     exit(EXIT_FAILURE);
   }
-  _subcuts.push_back(c);  
+  _subcuts.push_back(c);
 }
 
 bool
 Cut::Run(const Track& t) {
+  // run the stored test function with the track provided
   return (*_test)(t);
 }

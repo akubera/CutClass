@@ -7,6 +7,7 @@
 
 #include "CutList.hpp"
 
+#include <sstream>
 
 CutList::CutList() {
   
@@ -21,6 +22,22 @@ CutList::~CutList() {
 void 
 CutList::AddCut(const std::string& name, Cut& c) {
   _cuts.push_back(&c);
+  _name_map[name] = &c;
+  std::vector<Cut*> &vc = c._subcuts;
+
+  std::cout << "Adding Cut " << name << std::endl;
+
+  for(size_t i = 0; i < vc.size(); i++) {
+    Cut* cptr = vc[i];
+    _cuts.push_back(cptr);
+    if (cptr->_name == "") {
+      std::stringstream ss;
+      ss << name << '.' << i;
+      _name_map[ss.str()] = cptr;
+    } else {
+      _name_map[cptr->_name] = cptr;
+    }
+  }
 }
 
 void
@@ -28,13 +45,27 @@ CutList::AddCut(Cut& c) {
   if (c.Name() == "") {
     throw "ERROR : Adding Cut without an identifying name";
   }
-  _cuts.push_back(&c);  
+
+  _cuts.push_back(&c);
+  _name_map[c.Name()] = &c;
+  std::vector<Cut*> &vc = c._subcuts;
+  for (size_t i = 0; i < vc.size(); i++) {
+    Cut* cptr = vc[i];
+    _cuts.push_back(cptr);
+    if (cptr->_name == "") {
+      std::stringstream ss;
+      ss << c.Name() << '.' << i;
+      _name_map[ss.str()] = cptr;
+    } else {
+      _name_map[cptr->_name] = cptr;
+    }
+  }
 }
-  
+
 int
 CutList::Run(const Track& x) {
   int res = 0;
-  std::cout << "\n[CutList::Run] ("<<_cuts.size()<<")\n";
+  std::cout << "\n[CutList::Run] (" << _cuts.size() << ")\n";
   for (unsigned int i = 0; i <  _cuts.size(); i++) {
     std::cout << "\t" << _cuts[i]->Run(x) << " " << _cuts[i]->Size() << "\n";
     res |= (_cuts[i]->Run(x) << i);

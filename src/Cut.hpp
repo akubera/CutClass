@@ -24,6 +24,9 @@
  *
  */
 class Cut {
+
+  friend class CutList;
+
 public:
   // Cut(const std::string& name, test_int_func);
   Cut(const std::string& name, test_func*);
@@ -42,7 +45,7 @@ public:
   public:
     CutInserter(Cut *c) : _parent(c) {};
     CutInserter(test_func *t_func) : _parent(new Cut(t_func)) {};
-    virtual ~CutInserter() { std::cout << "~CutInserter\n"; };
+    virtual ~CutInserter() { };
 
     CutInserter& operator() (Cut *c);
     CutInserter& operator() (test_func *test);

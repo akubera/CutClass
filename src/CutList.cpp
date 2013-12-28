@@ -1,7 +1,7 @@
 /*
  *  src/CutList.cpp
  *
- *  Implementation of a list of cuts to perform on some data - 
+ *  Implementation of a list of cuts to perform on some data -
  *    and actions to apply on data matching specific cut patterns.
  */
 
@@ -11,7 +11,7 @@
 #include <algorithm>
 
 CutList::CutList() {
-  
+
 }
 
 CutList::~CutList() {
@@ -20,7 +20,7 @@ CutList::~CutList() {
   }
 }
 
-void 
+void
 CutList::AddCut(const std::string& name, Cut& c) {
   _cuts.push_back(&c);
   _name_map[name] = &c;
@@ -90,7 +90,6 @@ CutList::Run(const Track& x) {
                    }
           }
         }
-  
   return res;
 }
 
@@ -99,35 +98,35 @@ static size_t _cut_count(size_t s, Cut *c) {
   return s + c->Size();
 }
 
-size_t 
+size_t
 CutList::Size() {
   return std::accumulate(_cuts.begin(), _cuts.end(), 0, _cut_count);
   // return std::accumulate(_cuts.begin(), _cuts.end(), 0, [](size_t s, Cut* c){return s + c->Size();});
 }
 
-void 
+void
 CutList::AddAction(const std::string& logic_stmt, void (*action)(const Track&)) {
-  // copy the 'logic statement' into a stringstream to 
+  // copy the 'logic statement' into a stringstream to
   //   read in tokens separated by whitespace
   std::stringstream ss(logic_stmt);
-  
+
   // the resulting bitmask to be "found" when a track is tested
   uint32_t action_mask {0};
-  
+
   do {
     // read the next token into the iterator string 'it'
     std::string it;
     ss >> it;
-    
+
     // find the position in the _cuts vector
     std::vector<Cut*>::iterator found = std::find(_cuts.begin(), _cuts.end(), _name_map[it]);
     if (found == _cuts.end()) {
-      std::cerr << "ERROR : Cut identified by '" << it << "' was not found." << std::endl; 
+      std::cerr << "ERROR : Cut identified by '" << it << "' was not found." << std::endl;
       throw std::exception();
     }
     // get the position of the vector
     size_t position = found - _cuts.begin();
-    
+
     // bitwise OR to flip the bit at that position
     action_mask |= (0x01 << position);
     printf(" token : %s -> %lu  : %d\n",it.c_str(), position, action_mask);
@@ -136,3 +135,4 @@ CutList::AddAction(const std::string& logic_stmt, void (*action)(const Track&)) 
 
   _action_map[action_mask].push_back(action);
 }
+

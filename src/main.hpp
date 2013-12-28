@@ -8,7 +8,7 @@
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 
-
+#include <root/TH1F.h>
 
 typedef class track Track;
 
@@ -88,7 +88,7 @@ extern gsl_rng *gRandomGenerator;
 
 // typedef bool (*test_int_func)(int);
 // typedef bool (*test_float_func)(float);
-// 
+//
 // typedef class {
 //   int id;
 //   union {

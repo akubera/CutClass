@@ -5,12 +5,18 @@
 #include "Cut.hpp"
 #include "CutList.hpp"
 
+#include <TFile.h>
+
 // the GNU Scientific Library random number generator (global variable)
 gsl_rng *gRandomGenerator;
 
 // a "temperature" value for the Boltzmann mass distribution
 static float T = 250;
 
+TFile *file = new TFile("file.root", "RECREATE");
+
+TH1F *h1 = new TH1F("h1", "Mass", 360, 0, 300);
+TH1F *h2 = new TH1F("h2", "Pt", 360, 0, 50);
 
 int
 main()
@@ -25,8 +31,8 @@ main()
 
   // add some other cuts acting on different ranges
   c0.AddCut("zab", new eta_greator(2.0))(new eta_greator(5.0))(new eta_greator(8.0));
-  
-  
+
+
   // Create a pt cut
   Cut pt_cut("pt", new pt_greator(3.0));
 
@@ -38,7 +44,7 @@ main()
   cuts.AddCut(c0);
   cuts.AddCut(pt_cut);
 
-  
+
   cuts.AddAction("eta", add_to_histogram_eta_1);
   cuts.AddAction("pt zab", add_to_histogram_1);
 
@@ -48,14 +54,20 @@ main()
   Track track = Generate();
   track.print();
   std::cout << "Testing Random : " << cuts.Run(track) << std::endl;
-  for (int i = 0; i < 50; i++) {
+  for (int i = 0; i < 5e8; i++) {
     Track t = Generate();
-    std::cout << "Mass : " << t.m << std::endl;
-    cuts.Run(t);
+//    std::cout << "Mass : " << t.m << std::endl;
+//    cuts.Run(t);
   }
   // std::cout << c0.Run(1.0f) << ' ' << c0.Run(9.0f) << std::endl;
 
   std::cout << "It works!" << std::endl;
+  h1->Write();
+  h2->Write();
+
+  file->Write();
+  file->Close();
+  delete file;
   return 0;
 }
 
@@ -72,6 +84,10 @@ Track Generate() {
   res.m =  T*(1+log(1/(1-x)));
   res.E = sqrt(res.m * res.m + res.px * res.px +res.py*res.py + res.pz*res.pz);
   res.id = 0;
+
+  h1->Fill(res.m);
+  h2->Fill(res.pt());
+
   return res;
 }
 

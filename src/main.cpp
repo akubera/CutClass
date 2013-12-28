@@ -13,10 +13,9 @@ gsl_rng *gRandomGenerator;
 // a "temperature" value for the Boltzmann mass distribution
 static float T = 250;
 
-TFile *file = new TFile("file.root", "RECREATE");
-
-TH1F *h1 = new TH1F("h1", "Mass", 360, 0, 300);
-TH1F *h2 = new TH1F("h2", "Pt", 360, 0, 50);
+// Global pointers to ROOT objects
+TFile *file;
+TH1F *h1, *h2, *px_h, *py_h, *pz_h, *pt_h, *eta_histogram;
 
 int
 main()
@@ -24,6 +23,21 @@ main()
   // setup random number generator
   gRandomGenerator = gsl_rng_alloc(gsl_rng_taus);
   gsl_rng_set (gRandomGenerator, 0.0);
+
+
+  // Open TFile
+  file = new TFile("file.root", "RECREATE");
+
+  // Setup Histograms
+  h1 = new TH1F("h1", "Mass", 360, 0, 300);
+  h2 = new TH1F("h2", "Pt", 360, 0, 50);
+
+  px_h = new TH1F("px_h", "Px", 360, -50, 50);
+  py_h = new TH1F("py_h", "Py", 360, -50, 50);
+  pz_h = new TH1F("pz_h", "Pz", 360, -50, 50);
+  pt_h = new TH1F("pt_h", "Pt", 360, 0, 50);
+
+  eta_histogram = new TH1F("eta_histogram", "$\eta$", 360, -1.0, 1.0);
 
   // created a rapidity cut named "eta", which returns true if the passed track has a
   //  pseudo-rapidity greater than 0.1
@@ -54,7 +68,7 @@ main()
   Track track = Generate();
   track.print();
   std::cout << "Testing Random : " << cuts.Run(track) << std::endl;
-  for (int i = 0; i < 5e8; i++) {
+  for (int i = 0; i < 5e6; i++) {
     Track t = Generate();
 //    std::cout << "Mass : " << t.m << std::endl;
 //    cuts.Run(t);
@@ -86,7 +100,11 @@ Track Generate() {
   res.id = 0;
 
   h1->Fill(res.m);
-  h2->Fill(res.pt());
+
+  px_h->Fill(res.px);
+  py_h->Fill(res.py);
+  pz_h->Fill(res.pz);
+  pt_h->Fill(res.pt());
 
   return res;
 }

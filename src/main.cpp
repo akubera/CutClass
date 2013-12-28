@@ -81,7 +81,7 @@ Track Generate() {
   res.pz = gsl_ran_gaussian(gRandomGenerator, 4);
   double x = gsl_ran_flat(gRandomGenerator, 0.0, 1.0);
   // Boltzmann?
-  res.m =  T*(1+log(1/(1-x)));
+  res.m =  T*log(1/(1-x));
   res.E = sqrt(res.m * res.m + res.px * res.px +res.py*res.py + res.pz*res.pz);
   res.id = 0;
 

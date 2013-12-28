@@ -22,22 +22,27 @@ CutList::~CutList() {
 
 void
 CutList::AddCut(const std::string& name, Cut& c) {
+  // add the memory location of the cut to vector of cuts
   _cuts.push_back(&c);
-  _name_map[name] = &c;
-  std::vector<Cut*> &vc = c._subcuts;
 
-  std::cout << "Adding Cut " << name << std::endl;
+  // map the name provided to index of the newly pushed back cut pointer
+  _name_map[name] = _cuts.size()-1;
 
-  for(size_t i = 0; i < vc.size(); i++) {
-    Cut* cptr = vc[i];
-    _cuts.push_back(cptr);
-    if (cptr->_name == "") {
-      std::stringstream ss;
-      ss << name << '.' << (i+1);
-      _name_map[ss.str()] = cptr;
-    } else {
-      _name_map[cptr->_name] = cptr;
-    }
+  // Do we really want to include the cut's original name, too?
+  if ((c._name != "") && (c._name != name)) {
+    std::cout << "Cut has a name : '" << c._name << "'" << std::endl;
+    _name_map[c._name] = _cuts.size()-1;
+  }
+
+  // std::cout << "Adding Cut " << name << std::endl;
+
+
+  // iterate through the cut's subcuts
+  for(size_t i = 0; i < c._subcuts.size(); i++) {
+    std::stringstream ss;
+    ss << name << '.' << (i+1);
+    // recursively call AddCut to each subcut
+    AddCut(ss.str(), *c._subcuts[i]);
   }
 }
 
@@ -46,22 +51,7 @@ CutList::AddCut(Cut& c) {
   if (c.Name() == "") {
     throw "ERROR : Adding Cut without an identifying name";
   }
-
-  _cuts.push_back(&c);
-  _name_map[c.Name()] = &c;
-  std::vector<Cut*> &vc = c._subcuts;
-  for (size_t i = 0; i < vc.size(); i++) {
-    Cut* cptr = vc[i];
-    _cuts.push_back(cptr);
-    if (cptr->_name == "") {
-      std::stringstream ss;
-      ss << c.Name() << '.' << i;
-      _name_map[ss.str()] = cptr;
-      // std::cout << "Adding : " << &c << " " << ss.str() << " -> " << cptr << std::endl;
-    } else {
-      _name_map[cptr->_name] = cptr;
-    }
-  }
+  AddCut(c.Name(), c);
 }
 
 int
@@ -119,13 +109,16 @@ CutList::AddAction(const std::string& logic_stmt, void (*action)(const Track&)) 
     ss >> it;
 
     // find the position in the _cuts vector
-    std::vector<Cut*>::iterator found = std::find(_cuts.begin(), _cuts.end(), _name_map[it]);
-    if (found == _cuts.end()) {
-      std::cerr << "ERROR : Cut identified by '" << it << "' was not found." << std::endl;
+    std::map<std::string, unsigned short>::iterator found = _name_map.find(it);
+
+    // std::vector<Cut*>::iterator found = std::find(_cuts.begin(), _cuts.end(), _name_map[it]);
+    if (found == _name_map.end()) {
+      std::cerr << "ERROR : Cut identified by '" << it << "' was not found." << std::endl; 
       throw std::exception();
     }
     // get the position of the vector
-    size_t position = found - _cuts.begin();
+    // size_t position = found - _cuts.begin();
+    size_t position = found->second;
 
     // bitwise OR to flip the bit at that position
     action_mask |= (0x01 << position);

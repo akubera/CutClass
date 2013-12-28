@@ -33,11 +33,11 @@ public:
   size_t Size();
 
   void Print() {
-    for (  std::map<std::string, Cut*>::iterator it = _name_map.begin();
+    for (  std::map<std::string, unsigned short>::iterator it = _name_map.begin();
           it != _name_map.end();
           it++)
     {
-      std::cout << it->first << " -> " << (void*)it->second << std::endl;
+      std::cout << it->first << " -> " << it->second << std::endl;
     }
   }
 
@@ -46,8 +46,8 @@ protected:
   // the list of cuts
   std::vector<Cut*> _cuts;
 
-  // maps names of cuts to cuts
-  std::map<std::string, Cut*> _name_map;
+  // maps names to the index of the cut
+  std::map<std::string, unsigned short> _name_map;
 
   // maps bitsequences (in form of 32-bit unsigned ints) to actions involving a track
   std::map<uint32_t, std::vector<void (*)(const Track&)> > _action_map;

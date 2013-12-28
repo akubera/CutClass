@@ -18,18 +18,11 @@ Cut::Cut(test_func* function) :
 
 }
 
-Cut::Cut(const std::string& name) :
-  _index(0), _name(name)
-{
-
-}
-
 Cut::~Cut() {
   for (size_t i = 0; i < _subcuts.size(); i++) {
     delete _subcuts[i];
   }
 }
-
 
 // Function used to accumulate the counts of all the cuts
 static size_t _cut_count(size_t s, Cut *c) {
@@ -51,7 +44,7 @@ Cut::AddCut(Cut *c) {
   return Cut::CutInserter(this);
 }
 
-Cut::CutInserter& 
+Cut::CutInserter&
 Cut::CutInserter::operator() (Cut *c) {
   _parent->AddCutVoid(c);
   return *this;

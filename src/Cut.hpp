@@ -31,7 +31,7 @@ public:
   // Cut(const std::string& name, test_int_func);
   Cut(const std::string& name, test_func*);
   Cut(test_func*);
-  Cut(const std::string& name);
+  // Cut(const std::string& name);
 
   virtual ~Cut();
 

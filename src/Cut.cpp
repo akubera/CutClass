@@ -18,12 +18,6 @@ Cut::Cut(test_func* function) :
   
 }
 
-Cut::Cut(const std::string& name) :
-  _index(0), _name(name)
-{
-  
-}
-
 Cut::~Cut() {
   for (size_t i = 0; i < _subcuts.size(); i++) {
     delete _subcuts[i];

@@ -24,7 +24,6 @@ Cut::~Cut() {
   }
 }
 
-
 // Function used to accumulate the counts of all the cuts
 static size_t _cut_count(size_t s, Cut *c) {
   return s + c->Size();

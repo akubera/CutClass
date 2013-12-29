@@ -81,8 +81,11 @@ public:
 Track Generate();
 
 
+// These are "action" functions to be carried out when a track meets requirements.
 void add_to_histogram_1(const Track& );
 void add_to_histogram_eta_1(const Track& );
+void add_to_histogram_pt_30(const Track&);
+void add_to_histogram_pt_40(const Track&);
 
 extern gsl_rng *gRandomGenerator;
 

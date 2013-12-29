@@ -57,7 +57,7 @@ CutList::AddCut(Cut& c) {
 int
 CutList::Run(const Track& x) {
   int res = 0;
-  std::cout << "\n[CutList::Run] (" << _cuts.size() << ")\n";
+//  std::cout << "\n[CutList::Run] (" << _cuts.size() << ")\n";
   // Loop through each cut and test track
   for (unsigned int i = 0; i <  _cuts.size(); i++) {
     bool yes = _cuts[i]->Run(x);
@@ -71,7 +71,7 @@ CutList::Run(const Track& x) {
         it++)
         {
           bool works =  (it->first & res) == it->first;
-          std::cout << it->first << " & " << res << " = " << (it->first & res) << " ?= " << it->first << "  -> " << works << std::endl;
+//          std::cout << it->first << " & " << res << " = " << (it->first & res) << " ?= " << it->first << "  -> " << works << std::endl;
           if (works) {
             // loop through the actions!
             for (std::vector<void (*)(const Track&)>::iterator action = it->second.begin();

@@ -55,6 +55,10 @@ Cut::CutInserter::operator() (test_func *test) {
   return (*this)(new Cut(test));
 }
 
+Cut::CutInserter&
+Cut::CutInserter::operator() (const std::string& name, test_func *test) {
+    return (*this)(new Cut(name, test));
+}
 
 void
 Cut::AddCutVoid(Cut *c) {

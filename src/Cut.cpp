@@ -55,6 +55,10 @@ Cut::CutInserter::operator() (test_func *test) {
   return (*this)(new Cut(test));
 }
 
+Cut::CutInserter&
+Cut::CutInserter::operator() (const std::string& name, test_func *test) {
+    return (*this)(new Cut(name, test));
+}
 
 void
 Cut::AddCutVoid(Cut *c) {
@@ -63,7 +67,7 @@ Cut::AddCutVoid(Cut *c) {
     std::cerr << "Attempting to add a cut to itself - not a good idea. Aborting." << std::endl;
     exit(EXIT_FAILURE);
   }
-  if (nullptr == c) {
+  if (NULL == c) {
     std::cerr << "Attempting to add a null pointer to a cut. Aborting." << std::endl;
     exit(EXIT_FAILURE);
   }

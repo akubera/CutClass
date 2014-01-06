@@ -89,6 +89,19 @@ void add_to_histogram_pt_40(const Track&);
 
 extern gsl_rng *gRandomGenerator;
 
+
+
+void count_pt();
+
+void action_pt_1_0(const Track& );
+void action_pt_2_0(const Track& );
+void action_pt_3_0(const Track& );
+void action_pt_4_0(const Track& );
+void action_pt_6_0(const Track& );
+
+// a dumb function to show multiple conditions
+void action_pt_4_AND_2(const Track& );
+
 // typedef bool (*test_int_func)(int);
 // typedef bool (*test_float_func)(float);
 //

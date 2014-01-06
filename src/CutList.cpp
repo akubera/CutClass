@@ -4,11 +4,13 @@
  *  Implementation of a list of cuts to perform on some data -
  *    and actions to apply on data matching specific cut patterns.
  */
-
 #include "CutList.hpp"
 
 #include <sstream>
 #include <algorithm>
+
+#include <cstring>
+#include <cassert>
 
 CutList::CutList() {
 
@@ -30,7 +32,7 @@ CutList::AddCut(const std::string& name, Cut& c) {
 
   // Do we really want to include the cut's original name, too?
   if ((c._name != "") && (c._name != name)) {
-    std::cout << "Cut has a name : '" << c._name << "'" << std::endl;
+    std::cout << "Cut " << _cuts.size() << " has a name : '" << c._name << "'" << std::endl;
     _name_map[c._name] = _cuts.size()-1;
   }
 
@@ -94,14 +96,30 @@ CutList::Size() {
   // return std::accumulate(_cuts.begin(), _cuts.end(), 0, [](size_t s, Cut* c){return s + c->Size();});
 }
 
-void
+static
+char*
+uitoa(const unsigned int value, char * str, int base, size_t buff_size) {
+    assert(buff_size > log(value)/log(base) + 1);
+    // copy the value
+    unsigned int num = value;
+
+    for (int i = (int)buff_size-1; i >= 0; i--) {
+        int ratio = (int)(num / (int)pow(base, i));
+        str[buff_size - i-1] = ratio + '0';
+        num %= (int)pow(base, i);
+    }
+    return str;
+}
+
+void 
 CutList::AddAction(const std::string& logic_stmt, void (*action)(const Track&)) {
   // copy the 'logic statement' into a stringstream to
   //   read in tokens separated by whitespace
   std::stringstream ss(logic_stmt);
 
   // the resulting bitmask to be "found" when a track is tested
-  uint32_t action_mask {0};
+  uint32_t action_mask = 0;
+  std::cout << "Building condition '" << logic_stmt << "'" << std::endl;
 
   do {
     // read the next token into the iterator string 'it'
@@ -122,7 +140,9 @@ CutList::AddAction(const std::string& logic_stmt, void (*action)(const Track&)) 
 
     // bitwise OR to flip the bit at that position
     action_mask |= (0x01 << position);
-    printf(" token : %s -> %lu  : %d\n",it.c_str(), position, action_mask);
+    char action_buffer[33] = {0};
+    uitoa(action_mask, action_buffer, 2, 8);
+    printf(" token : %s -> %lu\tcurrent mask %s (%d)\n",it.c_str(), position, action_buffer, action_mask);
     // std::cout << " token : " << it << ' ' << _name_map[it]  << ' '<< (size_t)() << std::endl;
   } while (ss.good());
 

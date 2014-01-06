@@ -3,8 +3,9 @@
 #
 
 CXX = g++
-CXX_FLAGS = -Wall -g -std=c++11
-CXX_LIBS = -L/opt/local/lib  -lgsl -lgslcblas -lm 
+
+CXX_FLAGS = -Wall -g
+CXX_LIBS = -L/opt/local/lib  -lgsl -lgslcblas -lm
 
 ROOT_FLAGS = `root-config --cflags`
 ROOT_LIBS = `root-config --libs`

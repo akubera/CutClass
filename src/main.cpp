@@ -25,7 +25,6 @@ main()
   gRandomGenerator = gsl_rng_alloc(gsl_rng_taus);
   gsl_rng_set (gRandomGenerator, 0.0);
 
-
   // Open TFile
   file = new TFile("file.root", "RECREATE");
 
@@ -58,7 +57,7 @@ main()
   Cut pt_40_cut("pt>40", new pt_greator(40.0));
 //  pt_cut.AddCut("pt>40", new pt_greator(40.0));
 
-  // add cuts to a cutlist
+  // create a cutlist
   CutList cuts;
   cuts.AddCut(c0);
   cuts.AddCut(pt_cut);
@@ -69,7 +68,7 @@ main()
   cuts.AddAction("pt>30", add_to_histogram_pt_30);
   cuts.AddAction("pt>40", add_to_histogram_pt_40);
 
-  cuts.Print();
+//  cuts.Print();
 
   // generate a random cut
   Track track = Generate();
@@ -81,7 +80,6 @@ main()
     cuts.Run(t);
   }
   // std::cout << c0.Run(1.0f) << ' ' << c0.Run(9.0f) << std::endl;
-
   std::cout << "It works!" << std::endl;
   h1->Write();
   h2->Write();
@@ -97,8 +95,8 @@ main()
 Track Generate() {
   Track res;
 
-  res.px = gsl_ran_gaussian(gRandomGenerator, 20);
-  res.py = gsl_ran_gaussian(gRandomGenerator, 20);
+  res.px = gsl_ran_gaussian(gRandomGenerator, 2);
+  res.py = gsl_ran_gaussian(gRandomGenerator, 2);
   res.pz = gsl_ran_gaussian(gRandomGenerator, 4);
   double x = gsl_ran_flat(gRandomGenerator, 0.0, 1.0);
   // Boltzmann?

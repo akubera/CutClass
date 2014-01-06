@@ -6,62 +6,63 @@
 
 #include "Cut.hpp"
 
-Cut::Cut(const std::string& name, const test_func& function) :
+template <typename T> 
+Cut<T>::Cut(std::string const& name, std::function<bool (T const&)> const& function) :
   _index(0), _name(name), _test(function)
 {
   
 }
 
-Cut::Cut(const test_func& function) :
+template <typename T> 
+Cut<T>::Cut(const test_func<T>& function) :
   _index(0), _name(""), _test(function)
 {
   
 }
 
-Cut::~Cut() {
+template <typename T> 
+Cut<T>::~Cut() {
   for (size_t i = 0; i < _subcuts.size(); i++) {
     delete _subcuts[i];
   }
 }
 
-// Function used to accumulate the counts of all the cuts
-static size_t _cut_count(size_t s, Cut *c) {
-  return s + c->Size();
-}
-
+template <typename T> 
 size_t
-Cut::Size() {
-  // accumulate, beginning with 1
-  return std::accumulate(_subcuts.begin(), _subcuts.end(), 1, _cut_count);
-
+Cut<T>::Size() {
   // Do not use lambda functions if we are not using c++11, instead use the external _cut_count function
-//    return std::accumulate(_subcuts.begin(), _subcuts.end(), 1, [](size_t s,Cut* c){return s + c->Size();});
+  return std::accumulate(_subcuts.begin(), _subcuts.end(), 1, [](size_t s,Cut* c){return s + c->Size();});
 }
 
-Cut::CutInserter
-Cut::AddCut(Cut *c) {
+template <typename T>
+typename Cut<T>::CutInserter
+Cut<T>::AddCut(Cut<T> *c) {
   AddCutVoid(c);
-  return Cut::CutInserter(this);
+  return Cut<T>::CutInserter(this);
 }
 
-Cut::CutInserter& 
-Cut::CutInserter::operator() (Cut *c) {
+template <typename T>
+typename Cut<T>::CutInserter& 
+Cut<T>::CutInserter::operator() (Cut<T> *c) {
   _parent->AddCutVoid(c);
   return *this;
 }
 
-Cut::CutInserter& 
-Cut::CutInserter::operator() (test_func test) {
-  return (*this)(new Cut(test));
+template <typename T>
+typename Cut<T>::CutInserter& 
+Cut<T>::CutInserter::operator() (const test_func<T>& test) {
+  return (*this)(new Cut<T>(test));
 }
 
-Cut::CutInserter&
-Cut::CutInserter::operator() (const std::string& name, test_func test) {
-    return (*this)(new Cut(name, test));
+template <typename T>
+typename Cut<T>::CutInserter&
+Cut<T>::CutInserter::operator() (const std::string& name, const test_func<T>& test) {
+    return (*this)(new Cut<T>(name, test));
 }
 
+template <typename T>
 void
-Cut::AddCutVoid(Cut *c) {
+Cut<T>::AddCutVoid(Cut *c) {
   // std::cout << "Adding Cut with _bound : " << c->_test->_bound << std::endl;
   if (this == c) {
     std::cerr << "Attempting to add a cut to itself - not a good idea. Aborting." << std::endl;
@@ -74,8 +75,9 @@ Cut::AddCutVoid(Cut *c) {
   _subcuts.push_back(c);
 }
 
+template <typename T>
 bool
-Cut::Run(const Track& t) {
+Cut<T>::Run(const T& t) {
   // run the stored test function with the track provided
   return _test(t);
 }

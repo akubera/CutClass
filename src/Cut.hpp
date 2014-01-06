@@ -14,12 +14,11 @@
 #include <iostream>
 #include <cstdlib>
 
-#include "main.hpp"
+template<typename T>
+using test_func = std::function<bool(T const &)> const&;
 
-// typedef bool (*test_func)(Track);
-
-typedef std::function<bool(const track &)> test_func;
-
+template <typename _T>
+class CutList;
 
 /**
  * Cut
@@ -27,50 +26,52 @@ typedef std::function<bool(const track &)> test_func;
  * Class which accepts a function pointer and returns a boolean 
  *
  */
+template <typename T>
 class Cut {
 
-  friend class CutList;
+  friend class CutList<T>;
 
 public:
   // Cut(const std::string& name, test_int_func);
-  Cut(const std::string& name, const test_func&);
-  Cut(const test_func&);
+//  Cut(const std::string& name, test_func<T>);
+  Cut(const std::string& name, std::function<bool (T const&)> const&);
+  Cut(const test_func<T>&);
   // Cut(const std::string& name);
 
   virtual ~Cut();
 
   std::string Name() {return _name;};
   
-  bool Run(const Track&);
+  bool Run(const T&);
 
   size_t Size();
 
   class CutInserter {
   public:
-    CutInserter(Cut *c) : _parent(c) {};
-    CutInserter(test_func t_func) : _parent(new Cut(t_func)) {};
+    CutInserter(Cut<T> *c) : _parent(c) {};
+    CutInserter(const test_func<T>& t_func) : _parent(new Cut<T>(t_func)) {};
     virtual ~CutInserter() { };
 
-    CutInserter& operator() (Cut *c);
-    CutInserter& operator() (test_func test);
-    CutInserter& operator() (const std::string& name, test_func test);
+    CutInserter& operator() (Cut<T> *c);
+    CutInserter& operator() (const test_func<T>& test);
+    CutInserter& operator() (const std::string& name, const test_func<T>& test);
 
   protected:
-    Cut* _parent;
+    Cut<T>* _parent;
   };
 
-  CutInserter AddCut(Cut *c);
-  CutInserter AddCut(test_func t_func) {
-    return AddCut(new Cut(t_func));
+  CutInserter AddCut(Cut<T> *c);
+  CutInserter AddCut(test_func<T> t_func) {
+    return AddCut(new Cut<T>(t_func));
   };
-  CutInserter AddCut(const std::string& str, test_func t_func) {
-    return AddCut(new Cut(str, t_func));
+  CutInserter AddCut(const std::string& str, const test_func<T>& t_func) {
+    return AddCut(new Cut<T>(str, t_func));
   };
 
 protected:
   size_t _index;
   std::string _name;
-  test_func  _test;
+  test_func<T> _test;
 
   std::vector<Cut*> _subcuts;
 

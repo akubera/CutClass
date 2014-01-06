@@ -3,8 +3,6 @@
 #include <functional>
 
 #include "main.hpp"
-#include "Cut.hpp"
-#include "CutList.hpp"
 
 // the GNU Scientific Library random number generator (global variable)
 gsl_rng *gRandomGenerator;
@@ -12,15 +10,17 @@ gsl_rng *gRandomGenerator;
 // a "temperature" value for the Boltzmann mass distribution
 static float T = 250;
 
+template class Cut<Track>;
+
+
 unsigned int pt_1_count = 0,
         pt_2_count = 0,
         pt_3_count = 0,
         pt_4_count = 0,
         pt_6_count = 0;
 
-
 // generates a function which tests the pt of a particle against provided float
-std::function<bool(const Track&)> 
+std::function<bool(const Track&)>
 generate_pt_test(float f) {
     auto res = [f] (const Track &t) {return t.pt() > f;};
     return res;
@@ -35,18 +35,18 @@ main()
 
 
   // Create a pt cut
-  Cut pt_cut("pt>3.0", generate_pt_test(3.0));
+  TrackCut pt_cut("pt>3.0", generate_pt_test(3.0));
 
   // add some more cuts to the pt-cut group
   //  (Cut::AddCut returns an inserter with operator() which
   //   continues to insert if given a name + function pair)
-  pt_cut.AddCut("pt>4.0", generate_pt_test(4.0))
-               ("pt>6.0", generate_pt_test(6.0))
-               ("pt>2.0", generate_pt_test(2.0))
-               ("pt>1.0", generate_pt_test(1.0));
+//  pt_cut.AddCut("pt>4.0", generate_pt_test(4.0))
+//               ("pt>6.0", generate_pt_test(6.0))
+//               ("pt>2.0", generate_pt_test(2.0))
+//               ("pt>1.0", generate_pt_test(1.0));
 
   // create a cutlist
-  CutList cuts;
+  TrackCutlist cuts;
   cuts.AddCut(pt_cut);
 
   // store the action functions as lambdas

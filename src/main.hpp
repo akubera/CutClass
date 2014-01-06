@@ -3,12 +3,14 @@
 
 #include <iostream>
 
+#include "Cut.hpp"
+#include "CutList.hpp"
 
 #include <cmath>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 
-typedef class track Track;
+typedef struct track Track;
 
 struct track {
   float px;
@@ -34,3 +36,6 @@ struct track {
 Track Generate();
 
 extern gsl_rng *gRandomGenerator;
+
+typedef Cut<Track> TrackCut;
+typedef CutList<Track> TrackCutlist;

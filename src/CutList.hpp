@@ -55,7 +55,8 @@ protected:
   std::map<std::string, unsigned short> _name_map;
   
   // maps bitsequences (in form of 32-bit unsigned ints) to actions involving a track
-  std::map<uint32_t, cut_action<T>> _action_map;
+  std::map<uint32_t, std::vector<cut_action<T>>> _action_map;
 
 };
 
+#include "CutList.tpp"

@@ -40,10 +40,10 @@ main()
   // add some more cuts to the pt-cut group
   //  (Cut::AddCut returns an inserter with operator() which
   //   continues to insert if given a name + function pair)
-//  pt_cut.AddCut("pt>4.0", generate_pt_test(4.0))
-//               ("pt>6.0", generate_pt_test(6.0))
-//               ("pt>2.0", generate_pt_test(2.0))
-//               ("pt>1.0", generate_pt_test(1.0));
+  pt_cut.AddCut("pt>4.0", generate_pt_test(4.0))
+               ("pt>6.0", generate_pt_test(6.0))
+               ("pt>2.0", generate_pt_test(2.0))
+               ("pt>1.0", generate_pt_test(1.0));
 
   // create a cutlist
   TrackCutlist cuts;

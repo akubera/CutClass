@@ -78,7 +78,7 @@ CutList<T>::Run(const T& x) {
     if (works) {
       // loop through the actions!
       for (auto action : it.second) {
-        (*action)(x);
+        action(x);
       }
     }
   }

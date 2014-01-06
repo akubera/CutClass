@@ -9,7 +9,7 @@ CXX_LIBS = -L/opt/local/lib  -lgsl -lgslcblas -lm
 all: build test
 
 
-test: build/main.o build/Cut.o build/CutList.o
+test: build/main.o
 	${CXX} ${CXX_FLAGS} ${CXX_LIBS} $^ -o $@
 
 build/%.o: src/%.cpp src/%.hpp

@@ -67,7 +67,7 @@ Cut::AddCutVoid(Cut *c) {
     std::cerr << "Attempting to add a cut to itself - not a good idea. Aborting." << std::endl;
     exit(EXIT_FAILURE);
   }
-  if (nullptr == c) {
+  if (NULL == c) {
     std::cerr << "Attempting to add a null pointer to a cut. Aborting." << std::endl;
     exit(EXIT_FAILURE);
   }

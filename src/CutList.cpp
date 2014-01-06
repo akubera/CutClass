@@ -101,7 +101,7 @@ CutList::Size() {
 static char* uitoa(const unsigned int value, char * str, int base, size_t buff_size) {
     assert(buff_size > log(value)/log(base) + 1);
     // copy the value
-    unsigned int num {value};
+    unsigned int num = value;
 
     for (int i = (int)buff_size-1; i >= 0; i--) {
         int ratio = (int)(num / (int)pow(base, i));
@@ -118,7 +118,7 @@ CutList::AddAction(const std::string& logic_stmt, void (*action)(const Track&)) 
   std::stringstream ss(logic_stmt);
   
   // the resulting bitmask to be "found" when a track is tested
-  uint32_t action_mask {0};
+  uint32_t action_mask = 0;
   std::cout << "Building condition '" << logic_stmt << "'" << std::endl;
   do {
     // read the next token into the iterator string 'it'

@@ -14,6 +14,7 @@
 #include <map>
 
 typedef void (*cut_action)(const Track& );
+typedef unsigned int uint32_t;
 
 class CutList {
 public:

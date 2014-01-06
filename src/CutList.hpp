@@ -38,11 +38,8 @@ public:
   size_t Size();
   
   void Print() {
-    for (  std::map<std::string, unsigned short>::iterator it = _name_map.begin();
-          it != _name_map.end(); 
-          it++)
-    {
-      std::cout << it->first << " -> " << it->second << std::endl;
+    for (auto it : _name_map) {
+      std::cout << it.first << " -> " << it.second << std::endl;
     }
   }
 
@@ -59,4 +56,4 @@ protected:
 
 };
 
-#include "CutList.tpp"
+#include "CutList.tcc"

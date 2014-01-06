@@ -54,7 +54,7 @@ template <typename T>
 void
 CutList<T>::AddCut(Cut<T>& c) {
   if (c.Name() == "") {
-    throw "ERROR : Adding Cut<T> without an identifying name";
+    throw "ERROR : Adding Cut without an identifying name";
   }
   AddCut(c.Name(), c);
 }

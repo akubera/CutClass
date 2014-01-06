@@ -20,8 +20,8 @@ CutList<T>::CutList() {
 
 template <typename T>
 CutList<T>::~CutList() {
-  for (size_t i = 0; i < _cuts.size(); i++) {
-    // delete _cuts[i];
+  for (auto cut : _cuts) {
+//    delete cut;
   }
 }
 
@@ -86,17 +86,10 @@ CutList<T>::Run(const T& x) {
   return res;
 }
 
-// Function used to accumulate the counts of all the cuts
-template <typename T>
-static size_t _cut_count(size_t s, Cut<T> *c) {
-  return s + c->Size();
-}
-
 template <typename T>
 size_t 
 CutList<T>::Size() {
-  return std::accumulate(_cuts.begin(), _cuts.end(), 0, _cut_count);
-  // return std::accumulate(_cuts.begin(), _cuts.end(), 0, [](size_t s, Cut* c){return s + c->Size();});
+  return std::accumulate(_cuts.begin(), _cuts.end(), 0, [](size_t s, Cut<T>* c){return s + c->Size();});
 }
 
 static char* uitoa(const unsigned int value, char * str, int base, size_t buff_size) {

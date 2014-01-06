@@ -10,7 +10,6 @@
 #include <algorithm>
 
 #include <cstring>
-#include <cstdlib>
 #include <cassert>
 
 CutList::CutList() {

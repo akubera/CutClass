@@ -13,8 +13,10 @@
 #include <string>
 #include <map>
 
+#include <cstdlib>
+#include <stdint.h>
+
 typedef void (*cut_action)(const Track& );
-typedef unsigned int uint32_t;
 
 class CutList {
 public:
@@ -51,7 +53,7 @@ protected:
   std::map<std::string, unsigned short> _name_map;
   
   // maps bitsequences (in form of 32-bit unsigned ints) to actions involving a track
-  std::map<uint32_t, std::vector<void (*)(const Track&)> > _action_map;
+  std::map<uint32_t, std::vector<cut_action> > _action_map;
 
 };
 

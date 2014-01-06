@@ -6,13 +6,13 @@
 
 #include "Cut.hpp"
 
-Cut::Cut(const std::string& name, test_func* function) :
+Cut::Cut(const std::string& name, const test_func& function) :
   _index(0), _name(name), _test(function)
 {
   
 }
 
-Cut::Cut(test_func* function) :
+Cut::Cut(const test_func& function) :
   _index(0), _name(""), _test(function)
 {
   
@@ -51,12 +51,12 @@ Cut::CutInserter::operator() (Cut *c) {
 }
 
 Cut::CutInserter& 
-Cut::CutInserter::operator() (test_func *test) {
+Cut::CutInserter::operator() (test_func test) {
   return (*this)(new Cut(test));
 }
 
 Cut::CutInserter&
-Cut::CutInserter::operator() (const std::string& name, test_func *test) {
+Cut::CutInserter::operator() (const std::string& name, test_func test) {
     return (*this)(new Cut(name, test));
 }
 
@@ -77,5 +77,5 @@ Cut::AddCutVoid(Cut *c) {
 bool
 Cut::Run(const Track& t) {
   // run the stored test function with the track provided
-  return (*_test)(t);
+  return _test(t);
 }

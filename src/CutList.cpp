@@ -42,10 +42,8 @@ CutList::AddCut(const std::string& name, Cut& c) {
 
   // iterate through the cut's subcuts
   for(size_t i = 0; i < c._subcuts.size(); i++) {
-    std::stringstream ss;
-    ss << name << '.' << (i+1);
     // recursively call AddCut to each subcut
-    AddCut(ss.str(), *c._subcuts[i]);
+    AddCut(name + std::to_string(i+1), *c._subcuts[i]);
   }
 }
 
@@ -69,21 +67,17 @@ CutList::Run(const Track& x) {
   // res is now a bitcode representing the positions of the _cuts list which the track passed
 
   // Loop through actions and run all which match the resulting pattern
-  for ( std::map<uint32_t, std::vector<void (*)(const Track&)> >::iterator it = _action_map.begin();
-        it != _action_map.end();
-        it++)
-        {
-          bool works =  (it->first & res) == it->first;
+  for (auto it : _action_map) {
+    bool works =  (it.first & res) == it.first;
 //          std::cout << it->first << " & " << res << " = " << (it->first & res) << " ?= " << it->first << "  -> " << works << std::endl;
-          if (works) {
-            // loop through the actions!
-            for (std::vector<void (*)(const Track&)>::iterator action = it->second.begin();
-                           action != it->second.end(); action++) {
-                             (*action)(x);
-                   }
-          }
-        }
-  
+    if (works) {
+      // loop through the actions!
+      for (auto action : it.second) {
+        (*action)(x);
+      }
+    }
+  }
+
   return res;
 }
 

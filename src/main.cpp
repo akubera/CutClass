@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <functional>
 
 #include "main.hpp"
 #include "Cut.hpp"
@@ -18,6 +19,13 @@ unsigned int pt_1_count = 0,
         pt_6_count = 0;
 
 
+// generates a function which tests the pt of a particle against provided float
+std::function<bool(const Track&)> 
+generate_pt_test(float f) {
+    auto res = [f] (const Track &t) {return t.pt() > f;};
+    return res;
+}
+
 int
 main()
 {
@@ -25,28 +33,30 @@ main()
   gRandomGenerator = gsl_rng_alloc(gsl_rng_taus);
   gsl_rng_set (gRandomGenerator, 0.0);
 
+
   // Create a pt cut
-  Cut pt_cut("pt>3.0", new pt_greator(3.0));
+  Cut pt_cut("pt>3.0", generate_pt_test(3.0));
 
   // add some more cuts to the pt-cut group
   //  (Cut::AddCut returns an inserter with operator() which
   //   continues to insert if given a name + function pair)
-  pt_cut.AddCut("pt>4.0", new pt_greator(4.0))
-               ("pt>6.0", new pt_greator(6.0))
-               ("pt>2.0", new pt_greator(2.0))
-               ("pt>1.0", new pt_greator(1.0));
+  pt_cut.AddCut("pt>4.0", generate_pt_test(4.0))
+               ("pt>6.0", generate_pt_test(6.0))
+               ("pt>2.0", generate_pt_test(2.0))
+               ("pt>1.0", generate_pt_test(1.0));
 
   // create a cutlist
   CutList cuts;
   cuts.AddCut(pt_cut);
 
-  cuts.AddAction("pt>3.0", action_pt_3_0);
-  cuts.AddAction("pt>4.0", action_pt_4_0);
-  cuts.AddAction("pt>1.0", action_pt_1_0);
-  cuts.AddAction("pt>2.0", action_pt_2_0);
-  cuts.AddAction("pt>6.0", action_pt_6_0);
+  // store the action functions as lambdas
+  cuts.AddAction("pt>3.0", [](const Track& ){pt_3_count++;});
+  cuts.AddAction("pt>4.0", [](const Track& ){pt_4_count++;});
+  cuts.AddAction("pt>1.0", [](const Track& ){pt_1_count++;});
+  cuts.AddAction("pt>2.0", [](const Track& ){pt_2_count++;});
+  cuts.AddAction("pt>6.0", [](const Track& ){pt_6_count++;});
 
-  cuts.AddAction("pt>4.0 pt>2.0", action_pt_4_AND_2);
+  cuts.AddAction("pt>4.0 pt>2.0", [](const Track& ){ });
 
   
 //  cuts.Print();
@@ -99,28 +109,4 @@ add_to_histogram_1(const Track& track) {
 void
 add_to_histogram_eta_1(const Track& track) {
   std::cout << "Track has eta > 0.1 : " << track.eta() << std::endl;
-}
-
-void action_pt_1_0(const Track& ) {
-    pt_1_count++;
-}
-
-void action_pt_2_0(const Track& ) {
-    pt_2_count++;
-}
-
-void action_pt_3_0(const Track& ) {
-    pt_3_count++;
-}
-
-void action_pt_4_0(const Track& ) {
-    pt_4_count++;
-}
-
-void action_pt_4_AND_2(const Track& ) {
-    // do nothing!
-}
-
-void action_pt_6_0(const Track& ) {
-    pt_6_count++;
 }

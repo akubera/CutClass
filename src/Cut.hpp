@@ -9,6 +9,7 @@
 #include <vector>
 #include <string>
 #include <numeric>
+#include <functional>
 
 #include <iostream>
 #include <cstdlib>
@@ -16,6 +17,9 @@
 #include "main.hpp"
 
 // typedef bool (*test_func)(Track);
+
+typedef std::function<bool(const track &)> test_func;
+
 
 /**
  * Cut
@@ -29,8 +33,8 @@ class Cut {
 
 public:
   // Cut(const std::string& name, test_int_func);
-  Cut(const std::string& name, test_func*);
-  Cut(test_func*);
+  Cut(const std::string& name, const test_func&);
+  Cut(const test_func&);
   // Cut(const std::string& name);
 
   virtual ~Cut();
@@ -44,29 +48,29 @@ public:
   class CutInserter {
   public:
     CutInserter(Cut *c) : _parent(c) {};
-    CutInserter(test_func *t_func) : _parent(new Cut(t_func)) {};
+    CutInserter(test_func t_func) : _parent(new Cut(t_func)) {};
     virtual ~CutInserter() { };
 
     CutInserter& operator() (Cut *c);
-    CutInserter& operator() (test_func *test);
-    CutInserter& operator() (const std::string& name, test_func *test);
+    CutInserter& operator() (test_func test);
+    CutInserter& operator() (const std::string& name, test_func test);
 
   protected:
     Cut* _parent;
   };
 
   CutInserter AddCut(Cut *c);
-  CutInserter AddCut(test_func *t_func) {
+  CutInserter AddCut(test_func t_func) {
     return AddCut(new Cut(t_func));
   };
-  CutInserter AddCut(const std::string& str, test_func *t_func) {
+  CutInserter AddCut(const std::string& str, test_func t_func) {
     return AddCut(new Cut(str, t_func));
   };
 
 protected:
   size_t _index;
   std::string _name;
-  test_func* _test;
+  test_func  _test;
 
   std::vector<Cut*> _subcuts;
 

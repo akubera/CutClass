@@ -117,8 +117,8 @@ CutList::AddAction(const std::string& logic_stmt, void (*action)(const Track&)) 
       std::cerr << "ERROR : Cut identified by '" << it << "' was not found." << std::endl; 
       throw std::exception();
     }
+
     // get the position of the vector
-    // size_t position = found - _cuts.begin();
     size_t position = found->second;
     
     // bitwise OR to flip the bit at that position

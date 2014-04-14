@@ -24,11 +24,10 @@ main()
   Cut c0("eta", new eta_greator(0.1));
 
   // add some other cuts acting on different ranges
-  c0.AddCut("zab", new eta_greator(2.0))(new eta_greator(5.0))(new eta_greator(8.0));
-  
-  
+  c0.AddCut("zab>2", new eta_greator(2.0))(new eta_greator(5.0))(new eta_greator(8.0));
+
   // Create a pt cut
-  Cut pt_cut("pt", new pt_greator(3.0));
+  Cut pt_cut("pt>3", new pt_greator(3.0));
 
   // add another cut to the pt-cut group
   pt_cut.AddCut(new pt_greator(6.0));
@@ -38,9 +37,9 @@ main()
   cuts.AddCut(c0);
   cuts.AddCut(pt_cut);
 
-  
   cuts.AddAction("eta", add_to_histogram_eta_1);
-  cuts.AddAction("pt zab", add_to_histogram_1);
+  cuts.AddAction("pt>3 zab>2", add_to_histogram_1);
+  cuts.AddAction("pt>3 eta", add_to_histogram_4);
 
   cuts.Print();
 

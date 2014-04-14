@@ -3,7 +3,7 @@
 #
 
 CXX = g++
-CXX_FLAGS = -Wall -g -std=c++11
+CXX_FLAGS = -Wall -g
 CXX_LIBS = -L/opt/local/lib  -lgsl -lgslcblas -lm
 
 all: build test

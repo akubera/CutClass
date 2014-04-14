@@ -49,6 +49,7 @@ public:
 
     CutInserter& operator() (Cut *c);
     CutInserter& operator() (test_func *test);
+    CutInserter& operator() (const std::string& name, test_func *test);
 
   protected:
     Cut* _parent;

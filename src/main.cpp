@@ -1,15 +1,24 @@
 
 #include <iostream>
+#include <functional>
+#include <random>
 
 #include "main.hpp"
-#include "Cut.hpp"
-#include "CutList.hpp"
+#include "testfunc.hpp"
 
 // the GNU Scientific Library random number generator (global variable)
-gsl_rng *gRandomGenerator;
+std::mt19937 gRandomGenerator; //  = new std::mt19937;
+std::function<float()> track::get_gauss = std::bind(track::rnd_gauss, gRandomGenerator);
 
 // a "temperature" value for the Boltzmann mass distribution
 static float T = 250;
+
+std::normal_distribution<> Track::rnd_gauss;
+std::uniform_real_distribution<float> Track::rnd_flat(0, 1);
+
+
+//template class Cut<Track>;
+
 
 unsigned int pt_1_count = 0,
         pt_2_count = 0,
@@ -17,50 +26,58 @@ unsigned int pt_1_count = 0,
         pt_4_count = 0,
         pt_6_count = 0;
 
+// generates a function which tests the pt of a particle against provided float
+std::function<bool(const Track&)>
+generate_pt_test(float f) {
+    auto res = [f] (const Track &t) {return t.pt() > f;};
+    return res;
+}
 
 int
 main()
 {
   // setup random number generator
-  gRandomGenerator = gsl_rng_alloc(gsl_rng_taus);
-  gsl_rng_set (gRandomGenerator, 0.0);
+//  gRandomGenerator = gsl_rng_alloc(gsl_rng_taus);
+//  gsl_rng_set (gRandomGenerator, 0.0);
+//  gRandomGenerator = new std::mt19937();
+
 
   // created a rapidity cut named "eta", which returns true if the passed track has a
   //  pseudo-rapidity greater than 0.1
-  Cut c0("eta", new eta_greator(0.1));
+  TrackCut c0("eta", eta_greator(0.1));
 
   // add some other cuts acting on different ranges
-  c0.AddCut("zab>2", new eta_greator(2.0))(new eta_greator(5.0))(new eta_greator(8.0));
+  c0.AddCut("zab>2", eta_greator(2.0))(eta_greator(5.0))(eta_greator(8.0));
 
   // Create a pt cut
-  Cut pt_cut("pt>3", new pt_greator(3.0));
+//  TrackCut pt_cut("pt>3", pt_greator(3.0));
 
   // Create a pt cut
-  Cut pt_cut("pt>3.0", new pt_greator(3.0));
+  TrackCut pt_cut("pt>3.0", generate_pt_test(3.0));
 
   // add some more cuts to the pt-cut group
   //  (Cut::AddCut returns an inserter with operator() which
   //   continues to insert if given a name + function pair)
-  pt_cut.AddCut("pt>4.0", new pt_greator(4.0))
-               ("pt>6.0", new pt_greator(6.0))
-               ("pt>2.0", new pt_greator(2.0))
-               ("pt>1.0", new pt_greator(1.0));
+  pt_cut.AddCut("pt>4.0", generate_pt_test(4.0))
+               ("pt>6.0", generate_pt_test(6.0))
+               ("pt>2.0", generate_pt_test(2.0))
+               ("pt>1.0", generate_pt_test(1.0));
 
   // create a cutlist
-  CutList cuts;
+  TrackCutlist cuts;
   cuts.AddCut(pt_cut);
 
 //  cuts.AddAction("eta", add_to_histogram_eta_1);
 //  cuts.AddAction("pt>3 zab>2", add_to_histogram_1);
 //  cuts.AddAction("pt>3 eta", add_to_histogram_4);
 
-  cuts.AddAction("pt>3.0", action_pt_3_0);
-  cuts.AddAction("pt>4.0", action_pt_4_0);
-  cuts.AddAction("pt>1.0", action_pt_1_0);
-  cuts.AddAction("pt>2.0", action_pt_2_0);
-  cuts.AddAction("pt>6.0", action_pt_6_0);
+//  cuts.AddAction("pt>3.0", action_pt_3_0);
+//  cuts.AddAction("pt>4.0", action_pt_4_0);
+//  cuts.AddAction("pt>1.0", action_pt_1_0);
+//  cuts.AddAction("pt>2.0", action_pt_2_0);
+//  cuts.AddAction("pt>6.0", action_pt_6_0);
 
-  cuts.AddAction("pt>4.0 pt>2.0", action_pt_4_AND_2);
+  cuts.AddAction("pt>4.0 pt>2.0", [](const Track& ){ });
 
 //  cuts.Print();
 
@@ -93,10 +110,10 @@ std::cout << "Pt > 1.0 Count : " << pt_1_count << std::endl
 Track Generate() {
   Track res;
 
-  res.px = gsl_ran_gaussian(gRandomGenerator, 2);
-  res.py = gsl_ran_gaussian(gRandomGenerator, 2);
-  res.pz = gsl_ran_gaussian(gRandomGenerator, 4);
-  double x = gsl_ran_flat(gRandomGenerator, 0.0, 1.0);
+  res.px = Track::get_gauss();
+  res.py = Track::get_gauss();
+  res.pz = Track::get_gauss();
+  double x = Track::rnd_flat(gRandomGenerator);
   // Boltzmann?
   res.m =  T*log(1/(1-x));
   res.E = sqrt(res.m * res.m + res.px * res.px +res.py*res.py + res.pz*res.pz);
@@ -112,28 +129,4 @@ add_to_histogram_1(const Track& track) {
 void
 add_to_histogram_eta_1(const Track& track) {
   std::cout << "Track has eta > 0.1 : " << track.eta() << std::endl;
-}
-
-void action_pt_1_0(const Track& ) {
-    pt_1_count++;
-}
-
-void action_pt_2_0(const Track& ) {
-    pt_2_count++;
-}
-
-void action_pt_3_0(const Track& ) {
-    pt_3_count++;
-}
-
-void action_pt_4_0(const Track& ) {
-    pt_4_count++;
-}
-
-void action_pt_4_AND_2(const Track& ) {
-    // do nothing!
-}
-
-void action_pt_6_0(const Track& ) {
-    pt_6_count++;
 }

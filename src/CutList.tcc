@@ -1,7 +1,7 @@
 /*
  *  src/CutList.cpp
  *
- *  Implementation of a list of cuts to perform on some data - 
+ *  Implementation of a list of cuts to perform on some data -
  *    and actions to apply on data matching specific cut patterns.
  */
 #include "CutList.hpp"
@@ -11,19 +11,26 @@
 
 #include <cstring>
 #include <cassert>
+#include <cmath>
 
-CutList::CutList() {
-  
+
+template <typename T>
+CutList<T>::CutList() {
+
 }
 
-CutList::~CutList() {
-  for (size_t i = 0; i < _cuts.size(); i++) {
-    // delete _cuts[i];
+template <typename T>
+CutList<T>::~CutList() {
+  // delete all cuts and clear
+  for (auto& cut : _cuts) {
+    delete cut;
   }
+  _cuts.clear();
 }
 
-void 
-CutList::AddCut(const std::string& name, Cut& c) {
+template <typename T>
+void
+CutList<T>::AddCut(const std::string& name, Cut<T>& c) {
   // add the memory location of the cut to vector of cuts
   _cuts.push_back(&c);
 
@@ -32,34 +39,34 @@ CutList::AddCut(const std::string& name, Cut& c) {
 
   // Do we really want to include the cut's original name, too?
   if ((c._name != "") && (c._name != name)) {
-    std::cout << "Cut " << _cuts.size() << " has a name : '" << c._name << "'" << std::endl;
+    std::cout << "Cut<T> " << _cuts.size() << " has a name : '" << c._name << "'" << std::endl;
     _name_map[c._name] = _cuts.size()-1;
   }
 
-  // std::cout << "Adding Cut " << name << std::endl;
+  // std::cout << "Adding Cut<T> " << name << std::endl;
 
 
   // iterate through the cut's subcuts
   for(size_t i = 0; i < c._subcuts.size(); i++) {
-    std::stringstream ss;
-    ss << name << '.' << (i+1);
-    // recursively call AddCut to each subcut
-    AddCut(ss.str(), *c._subcuts[i]);
+    // recursively call AddCut<T> to each subcut
+    AddCut(name + std::to_string(i+1), *c._subcuts[i]);
   }
 }
 
+template <typename T>
 void
-CutList::AddCut(Cut& c) {
+CutList<T>::AddCut(Cut<T>& c) {
   if (c.Name() == "") {
     throw "ERROR : Adding Cut without an identifying name";
   }
   AddCut(c.Name(), c);
 }
 
+template <typename T>
 int
-CutList::Run(const Track& x) {
+CutList<T>::Run(const T& x) {
   int res = 0;
-//  std::cout << "\n[CutList::Run] (" << _cuts.size() << ")\n";
+//  std::cout << "\n[CutList<T>::Run] (" << _cuts.size() << ")\n";
   // Loop through each cut and test track
   for (unsigned int i = 0; i <  _cuts.size(); i++) {
     bool yes = _cuts[i]->Run(x);
@@ -68,33 +75,24 @@ CutList::Run(const Track& x) {
   // res is now a bitcode representing the positions of the _cuts list which the track passed
 
   // Loop through actions and run all which match the resulting pattern
-  for ( std::map<uint32_t, std::vector<void (*)(const Track&)> >::iterator it = _action_map.begin();
-        it != _action_map.end();
-        it++)
-        {
-          bool works =  (it->first & res) == it->first;
+  for (auto it : _action_map) {
+    bool works =  (it.first & res) == it.first;
 //          std::cout << it->first << " & " << res << " = " << (it->first & res) << " ?= " << it->first << "  -> " << works << std::endl;
-          if (works) {
-            // loop through the actions!
-            for (std::vector<void (*)(const Track&)>::iterator action = it->second.begin();
-                           action != it->second.end(); action++) {
-                             (*action)(x);
-                   }
-          }
-        }
-  
+    if (works) {
+      // loop through the actions!
+      for (auto action : it.second) {
+        action(x);
+      }
+    }
+  }
+
   return res;
 }
 
-// Function used to accumulate the counts of all the cuts
-static size_t _cut_count(size_t s, Cut *c) {
-  return s + c->Size();
-}
-
-size_t 
-CutList::Size() {
-  return std::accumulate(_cuts.begin(), _cuts.end(), 0, _cut_count);
-  // return std::accumulate(_cuts.begin(), _cuts.end(), 0, [](size_t s, Cut* c){return s + c->Size();});
+template <typename T>
+size_t
+CutList<T>::Size() {
+  return std::accumulate(_cuts.begin(), _cuts.end(), 0, [](size_t s, Cut<T>* c){return s + c->Size();});
 }
 
 static char* uitoa(const unsigned int value, char * str, int base, size_t buff_size) {
@@ -110,12 +108,13 @@ static char* uitoa(const unsigned int value, char * str, int base, size_t buff_s
     return str;
 }
 
-void 
-CutList::AddAction(const std::string& logic_stmt, void (*action)(const Track&)) {
-  // copy the 'logic statement' into a stringstream to 
+template <typename T>
+void
+CutList<T>::AddAction(const std::string& logic_stmt, const cut_action<T> &action) {
+  // copy the 'logic statement' into a stringstream to
   //   read in tokens separated by whitespace
   std::stringstream ss(logic_stmt);
-  
+
   // the resulting bitmask to be "found" when a track is tested
   uint32_t action_mask = 0;
   std::cout << "Building condition '" << logic_stmt << "'" << std::endl;
@@ -123,19 +122,19 @@ CutList::AddAction(const std::string& logic_stmt, void (*action)(const Track&)) 
     // read the next token into the iterator string 'it'
     std::string it;
     ss >> it;
-    
+
     // find the position in the _cuts vector
     std::map<std::string, unsigned short>::iterator found = _name_map.find(it);
-    
+
     // std::vector<Cut*>::iterator found = std::find(_cuts.begin(), _cuts.end(), _name_map[it]);
     if (found == _name_map.end()) {
-      std::cerr << "ERROR : Cut identified by '" << it << "' was not found." << std::endl; 
+      std::cerr << "ERROR : Cut<T> identified by '" << it << "' was not found." << std::endl;
       throw std::exception();
     }
 
     // get the position of the vector
     size_t position = found->second;
-    
+
     // bitwise OR to flip the bit at that position
     action_mask |= (0x01 << position);
     char action_buffer[33] = {0};

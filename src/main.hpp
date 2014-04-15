@@ -3,14 +3,18 @@
 
 #include <iostream>
 
+#include "Cut.hpp"
+#include "CutList.hpp"
 
 #include <cmath>
-#include <gsl/gsl_rng.h>
-#include <gsl/gsl_randist.h>
+#include <random>
+//#include <gsl/gsl_rng.h>
+//#include <gsl/gsl_randist.h>
 
+typedef struct track Track;
 
-
-typedef class track Track;
+//extern gsl_rng *gRandomGenerator;
+extern std::mt19937 gRandomGenerator;
 
 struct track {
   float px;
@@ -31,84 +35,14 @@ struct track {
   void print() const {
     printf("px %f py %f pz %f m %f E %f\n",px,py,pz,m,E);
   }
+
+  static std::normal_distribution<> rnd_gauss;
+  static std::uniform_real_distribution<float> rnd_flat;
+
+  static std::function<float()> get_gauss;
 };
-
-typedef bool (*pt_test)(Track);
-
-template <int N, int D>
-bool pt_greater(Track t) {
-  // float pt = sqrt(t.px*t.px+t.py*t.py);
-  return (1.0f * N / D < t.pt());
-};
-
-// typedef class test_func TestFunc;
-
-class test_func {
-public:
-  test_func(float f) : _bound(f) {};
-  virtual bool operator() (const Track& t) = 0;
-protected:
-  float _bound;
-};
-
-class pt_greator : public test_func {
-public:
-  pt_greator(float f) : test_func(f) {};
-  bool operator() (const Track& t) {
-    return (_bound < sqrt(t.px*t.px+t.py*t.py));
-  };
-};
-
-
-class eta_greator : public test_func {
-public:
-  eta_greator(float f) : test_func(f) {};
-  bool operator() (const Track& t) {
-    return (_bound < t.eta());
-  };
-};
-
-
-class eta_less : public test_func {
-public:
-  eta_less(float f) : test_func(f) {};
-  bool operator() (const Track& t) {
-    return (_bound > t.eta());
-  };
-};
-
 
 Track Generate();
 
-
-void add_to_histogram_1(const Track& );
-void add_to_histogram_eta_1(const Track& );
-
-extern gsl_rng *gRandomGenerator;
-
-
-
-void count_pt();
-
-void action_pt_1_0(const Track& );
-void action_pt_2_0(const Track& );
-void action_pt_3_0(const Track& );
-void action_pt_4_0(const Track& );
-void action_pt_6_0(const Track& );
-
-// a dumb function to show multiple conditions
-void action_pt_4_AND_2(const Track& );
-
-// typedef bool (*test_int_func)(int);
-// typedef bool (*test_float_func)(float);
-// 
-// typedef class {
-//   int id;
-//   union {
-//     test_int_func i_func;
-//     test_float_func f_func;
-//   };
-// } test_func;
-
-
-
+typedef Cut<Track> TrackCut;
+typedef CutList<Track> TrackCutlist;
